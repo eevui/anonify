@@ -181,11 +181,13 @@ function addTrackstoPlaylist(playlistId, tracks) {
 			});
 
 			response.on('end', () => {
-				resolve();
+				resolve(tracks.slice(100));
 			});
 		});
 
-		request.end(JSON.stringify({'uris': tracks}));
+		request.end(JSON.stringify({'uris': tracks.slice(0, 100)}));
+	}).then(remainingTracks => {
+		return remainingTracks.length !== 0 ? addTrackstoPlaylist(playlistId, remainingTracks) : remainingTracks;
 	});
 }
 

@@ -14,6 +14,9 @@ const https = require('https');
 
 const app = express();
 
+app.set('views', './src/views');
+app.set('view engine', 'pug');
+
 app.use(express.urlencoded({ extended: true }));
 
 const port = process.env.PORT;
@@ -70,7 +73,7 @@ function getAccessToken() {
 	});
 }
 
-app.get('/', (request, response) => {
+app.get('/auth', (request, response) => {
 	const code = request.query.code;
 	const authorizationString = `${process.env.CLIENT_ID}:${process.env.CLIENT_SECRET}`;
 	const requestOptions = {
@@ -257,20 +260,33 @@ function addTrackstoPlaylist(playlistId, tracks) {
 	});
 }
 
-app.post('/anonymize', (request, response) => {
+app.post('/anonify', (request, response) => {
 	const playlistUrl = request.body.playlistUrl;
 
-	const playlistId = playlistUrl.match(/(?<=spotify.com\/playlist\/)((.+(?=\?.*))|(.+))/)[0];
+	if (!playlistUrl) {
+		return response.render('error', {message: 'No playlist supplied. Please try again.'});
+	}
+
+	let playlistId = ''
+	try {
+		playlistId = playlistUrl.match(/(?<=spotify.com\/playlist\/)((.+(?=\?.*))|(.+))/)[0];
+	} catch (err) {
+		return response.render('error', {message: 'Playlist link is malformed. Please try again.'})
+	}
 
 	getCurrentId().then(id => {
 		createPlaylist(id).then(anonPlaylistId => {
 			playlistTracks(playlistId).then(tracks => {
 				addTrackstoPlaylist(anonPlaylistId, tracks).then(() => {
-					response.send('https://open.spotify.com/playlist/' + anonPlaylistId);
+					response.render('anonified', {playlistUrl: 'https://open.spotify.com/playlist/' + anonPlaylistId})
 				});
 			});
 		});
 	});
+});
+
+app.get('/', (request, response) => {
+	response.render('index');
 });
 
 app.listen(port);

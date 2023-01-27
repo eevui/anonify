@@ -1,7 +1,7 @@
 html
 	head
 		title Anonify!
-	body(style="text-align: center; font-family: sans;")
+	body(style="text-align: center; font-family: sans; width: 500px; height: 100%; display: flex; flex-direction: column; justify-content: center; margin: auto;")
 		h1 Share your Spotify playlists anonymously!
 		form(action="/anonify" method="POST")
 			div: input(type="text" name="playlistUrl" placeholder="https://open.spotify.com/playlist/3R4m9U6d8iK59HqqCL0fTS" style="width: 400px;")

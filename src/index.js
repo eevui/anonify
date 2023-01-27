@@ -216,6 +216,7 @@ function trackIds(url, tracks) {
 				});
 			});
 			request.end();
+		}).catch(err => {
 		});
 	}).then(res => {
 		return res.next ? trackIds(res.next, res.tracks) : res.tracks;

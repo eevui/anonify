@@ -19,8 +19,8 @@ app.set('view engine', 'pug');
 
 app.use(express.urlencoded({ extended: true }));
 
-const host = process.env.HOST;
-const port = process.env.PORT;
+const redirect_uri = process.env.REDIRECT_URI;
+const port = process.env.PORT || 3000;
 
 function refreshAccessToken(refreshToken) {
 	return new Promise((resolve, reject) => {
@@ -113,7 +113,7 @@ app.get('/auth', (request, response) => {
 	const body = {
 		'code': code,
 		'grant_type': 'authorization_code',
-		'redirect_uri': `${host}:${port}/auth`
+		'redirect_uri': `${redirect_uri}`
 	}
 	const entries = Object.keys(body).map(key => {
 		return encodeURIComponent(key) + '=' + encodeURIComponent(body[key]);

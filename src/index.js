@@ -19,6 +19,7 @@ app.set('view engine', 'pug');
 
 app.use(express.urlencoded({ extended: true }));
 
+const host = process.env.HOST;
 const port = process.env.PORT;
 
 function refreshAccessToken(refreshToken) {
@@ -97,7 +98,7 @@ app.get('/auth', (request, response) => {
 			}, Buffer.alloc(0));
 			response.setHeader('Content-Type', 'application/json');
 			const responseObj = JSON.parse(data.toString());
-			client.mset('anonify:accessToken', responseObj.accessToken, 'anonify:refreshToken', responseObj.refresh_token, (err, reply) => {
+			client.mset('anonify:accessToken', responseObj.access_token, 'anonify:refreshToken', responseObj.refresh_token, (err, reply) => {
 				client.expire('anonify:accessToken', responseObj.expires_in);
 			});
 			response.send(responseObj);
@@ -112,7 +113,7 @@ app.get('/auth', (request, response) => {
 	const body = {
 		'code': code,
 		'grant_type': 'authorization_code',
-		'redirect_uri': `http://localhost:${port}`
+		'redirect_uri': `${host}:${port}/auth`
 	}
 	const entries = Object.keys(body).map(key => {
 		return encodeURIComponent(key) + '=' + encodeURIComponent(body[key]);

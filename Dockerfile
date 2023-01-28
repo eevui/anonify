@@ -4,7 +4,7 @@ RUN apk --update add redis
 
 WORKDIR /app
 
-ENV PORT=5000
+ENV PORT=3000
 
 EXPOSE $PORT
 
